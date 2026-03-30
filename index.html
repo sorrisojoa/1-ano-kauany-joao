@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Feliz 1 Ano, Kauany!</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-color: #ffe6e6; 
+        font-family: 'Arial', sans-serif;
+        overflow: hidden; /* Trava a tela de fundo para não "dançar" no celular */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* --- TELA INICIAL --- */
+    #tela-inicial {
+        position: absolute;
+        z-index: 9999;
+        background-color: #ffe6e6;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 1s ease;
+    }
+
+    .btn-iniciar {
+        padding: 20px 40px;
+        font-size: 20px;
+        color: white;
+        background-color: #d10034;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0px 8px 15px rgba(0,0,0,0.2);
+        font-weight: bold;
+        animation: palpitarBotao 1.5s infinite alternate;
+        text-align: center;
+        max-width: 80%;
+    }
+
+    /* --- CONTAINER DA SURPRESA --- */
+    #conteudo-surpresa {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0; 
+    }
+
+    .cena {
+        position: absolute;
+        opacity: 0; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Cena 1 */
+    .coracao-grande { font-size: 100px; animation: palpitar 1s infinite alternate; margin-bottom: 10px; }
+    .mensagem { font-size: 28px; color: #d10034; font-weight: bold; padding: 0 20px; }
+
+    /* Cena 2 */
+    .animais { display: flex; align-items: center; font-size: 80px; }
+    .urso { transform: translateX(-60px); }
+    .coelho { transform: translateX(60px); }
+    .coracao-beijo { font-size: 40px; opacity: 0; margin: 0 10px; }
+
+    /* Cena 3 (Foto) */
+    .foto-casal {
+        max-width: 80%;
+        max-height: 45vh;
+        border-radius: 20px;
+        border: 5px solid white;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+        z-index: 50; 
+        margin-bottom: 20px;
+        object-fit: cover;
+    }
+
+    .btn-carta {
+        padding: 15px 30px;
+        font-size: 18px;
+        color: white;
+        background-color: #ff4d79;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+        font-weight: bold;
+        z-index: 50;
+        opacity: 0; 
+        transition: transform 0.3s;
+    }
+    .btn-carta:hover { transform: scale(1.05); }
+
+    /* --- CENA 4: A CARTA --- */
+    .caixa-carta {
+        background-color: rgba(255, 255, 255, 0.95);
+        width: 85%;
+        max-width: 600px;
+        height: 75vh;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+        z-index: 50;
+        overflow-y: auto; 
+        -webkit-overflow-scrolling: touch; /* Deixa a rolagem suave em iPhones */
+        text-align: left;
+        color: #333;
+        line-height: 1.6;
+        font-size: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: #ff4d79 transparent;
+    }
+
+    .caixa-carta::-webkit-scrollbar { width: 6px; }
+    .caixa-carta::-webkit-scrollbar-thumb { background-color: #ff4d79; border-radius: 10px; }
+
+    .titulo-carta {
+        color: #d10034;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 22px;
+        border-bottom: 2px solid #ffe6e6;
+        padding-bottom: 10px;
+    }
+
+    .assinatura {
+        margin-top: 30px;
+        text-align: right;
+        font-style: italic;
+        color: #d10034;
+        font-weight: bold;
+    }
+
+    /* Corações Caindo */
+    .coracao-caindo {
+        position: absolute;
+        top: -10vh;
+        color: #d10034;
+        font-size: 20px;
+        z-index: 5;
+        pointer-events: none; 
+        animation: cair linear forwards;
+    }
+
+    /* =========================================
+       AJUSTES ESPECÍFICOS PARA CELULARES (MOBILE)
+       ========================================= */
+    @media (max-width: 600px) {
+        .coracao-grande { font-size: 80px; }
+        .mensagem { font-size: 22px; }
+        .animais { font-size: 60px; }
+        .urso { transform: translateX(-40px); }
+        .coelho { transform: translateX(40px); }
+        .coracao-beijo { font-size: 30px; margin: 0 5px; }
+        .caixa-carta { width: 85%; padding: 20px; height: 80vh; font-size: 15px; }
+        .titulo-carta { font-size: 18px; }
+        .btn-iniciar { font-size: 18px; padding: 15px 30px; }
+        .btn-carta { font-size: 16px; padding: 12px 25px; }
+    }
+
+    /* --- GATILHOS DE ANIMAÇÃO --- */
+    .rodando .cena1 { animation: animacaoCena1 5s forwards; z-index: 10; }
+    .rodando .cena2 { animation: animacaoCena2 6s ease-in-out 5s forwards; z-index: 10; }
+    
+    /* Adaptando o movimento dos ursos para celular */
+    @media (min-width: 601px) {
+        .rodando .urso { animation: moverDireitaDesk 2s ease-in-out 6s forwards; }
+        .rodando .coelho { animation: moverEsquerdaDesk 2s ease-in-out 6s forwards; }
+    }
+    @media (max-width: 600px) {
+        .rodando .urso { animation: moverDireitaMob 2s ease-in-out 6s forwards; }
+        .rodando .coelho { animation: moverEsquerdaMob 2s ease-in-out 6s forwards; }
+    }
+
+    .rodando .coracao-beijo { animation: aparecerCoracao 1s ease-in-out 7.5s forwards, palpitar 1s infinite alternate 7.5s; }
+    .rodando .cena3 { animation: aparecerFoto 2s ease-in-out 11s forwards; z-index: 20; }
+    .rodando .btn-carta { animation: aparecerBotao 1s ease-in-out 13s forwards; }
+
+    /* --- KEYFRAMES --- */
+    @keyframes palpitarBotao { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+    @keyframes palpitar { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
+    @keyframes animacaoCena1 { 0% { opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+    @keyframes animacaoCena2 { 0% { opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+    @keyframes aparecerFoto { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes aparecerBotao { 0% { opacity: 0; } 100% { opacity: 1; pointer-events: auto;} }
+    
+    @keyframes moverDireitaDesk { 100% { transform: translateX(10px); } }
+    @keyframes moverEsquerdaDesk { 100% { transform: translateX(-10px); } }
+    @keyframes moverDireitaMob { 100% { transform: translateX(5px); } }
+    @keyframes moverEsquerdaMob { 100% { transform: translateX(-5px); } }
+    
+    @keyframes aparecerCoracao { 100% { opacity: 1; } }
+    @keyframes cair { 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+
+    .esconder-suave { opacity: 0 !important; transition: opacity 1s ease; pointer-events: none; }
+    .mostrar-suave { opacity: 1 !important; transition: opacity 1s ease 1s; z-index: 30; }
+</style>
+</head>
+<body>
+
+    <audio id="meuAudio" src="musica.mp3" loop preload="auto"></audio>
+
+    <div id="tela-inicial">
+        <button class="btn-iniciar" id="btn-iniciar">Clique para abrir sua surpresa ❤️</button>
+    </div>
+
+    <div id="conteudo-surpresa">
+        
+        <div class="cena cena1">
+            <div class="coracao-grande">❤️</div>
+            <div class="mensagem">Feliz 1 ano meu amor,<br>EU TE AMO</div>
+        </div>
+
+        <div class="cena cena2">
+            <div class="animais">
+                <div class="urso">🐻</div>
+                <div class="coracao-beijo">💖</div>
+                <div class="coelho">🐰</div>
+            </div>
+        </div>
+
+        <div class="cena cena3" id="cena-foto">
+            <img src="foto.jpeg" alt="Nossa Foto" class="foto-casal">
+            <button class="btn-carta" id="btn-abrir-carta">Ler Carta ❤️</button>
+        </div>
+
+        <div class="cena" id="cena-carta">
+            <div class="caixa-carta">
+                <h2 class="titulo-carta">Carta de declaração: Kauany Cadaxo</h2>
+                
+                <p>Meu amor, oii minha princesa, feliz 1 ANO meu amoooooooooooor, isso mesmo coelhinha um aninho juntos e de tanta história para eu contar pros nossos futuros filhos de como eu conheci a mãe deles sendo a mulher mais incrível desse mundo, mais perfeita, mais linda, mais cheirosa, mais fofa, com sua risada bem gostosa, com seus olhinhos castanhos brilhantes e cheios de vida e sonhos para realizar.</p>
+                
+                <p>Com sua força, a cada dia, me dando todo orgulho do mundo, me inspirando, ela não faz ideia o quanto me motiva, o quanto me mantém de pé, se eu não desisti de algo hoje é por causa dela, pela felicidade que ela me trás, pelo propósito de ser o melhor homem do mundo e fazer ela feliz para sempre como ela sempre merece a cada dia.</p>
+                
+                <p>Só ela sabe o que passou e ninguém mais, só ela que mesmo exausta se mantém firme e forte com esse brilho dela jamais visto em alguém deste universo, ela é minha outra metade, a minha força, a minha coragem, a minha inspiração, a minha melhor escolha e mais importante da minha vida, o inesperado que tanto sonhei, a minha alma gêmea, a minha princesa.</p>
+                
+                <p>Poder beijá-la é algo comparado a deitar nas nuvens e comer o meu doce favorito que é o mesmo que o dela, chocolate. Poder amá-la é o meu maior presente dessa vida, é o meu privilégio e luto para que todos os dias seja para sempre, porque vai ser. Meu coração pertence a ela, eu sou louco, perdidamente apaixonado, eu nunca senti algo tão forte do que eu sinto por ela, perdê-la, seria como perder tudo o que eu tenho, não gosto nem de pensar nisso porque não vai acontecer.</p>
+                
+                <p>Quero cuidar dela para sempre, proporcionar tudo a ela e o que a minha criança interior sempre quis, se sentir amado da forma mais intensa possível, claro que temos algumas diferenças mas isso é normal, quando juntamos isso trás algo tão natural e genuíno. O que eu nunca pensei que iria gostar na minha vida ela me fez gostar, eu simplesmente como o doce, a comida favorita dela só para lembrar de cada pedacinho dela, juro, essa garota é tão especial que me fez mudar e quero mudar a cada dia mais só para ver mais uma vez esse sorriso mais lindo do mundo.</p>
+                
+                <p>Esse cabelo mais maravilhoso que Deus pensou em juntar todas as perfeições em só uma única pessoa e ela é minha namorada e eu sou muito feliz e agradeço por ter ela ao meu lado. Ela é a mulher da minha vida, a razão pela qual a vida é boa, é que sentir o abraço dela eu encontro a cura do mal e nossos sonhos ao longo prazo serão realizados, eu quero que eu seja lembrado como um bom marido e pai que o meu pai sempre foi.</p>
+                
+                <p>Eu te amo minha princesa, eu amo tudo em você, não pense mal de si mesma meu amor, aos meus olhos você é a aurora boreal, é as cachoeiras pelas montanhas, é o nascer do sol que significa recomeço e o meu recomeço foi quando eu conheci você e na hora percebi que era você tudo o que eu sempre sonhei.</p>
+                
+                <p>Quero sentir tudo seu para sempre e abraçar você eternamente, te entregar um buquê roxo e ver seus olhinhos lindos cheio de lágrimas e beijar você, desbloquear o seu lado que você nunca viu, é sem dúvidas a coisa mais linda que já ouvi na minha vida, sua voz que ecoa pela minha cabeça e seu cheirinho que sinto ao longo de todos os dias é a maior conexão que sinto sua mesmo na distância.</p>
+                
+                <p>Eu to do seu lado para sempre, com amor,</p>
+                
+                <div class="assinatura">
+                    João Victor<br>
+                    <span style="font-size: 14px; color: #888;">(apenas um homem qualquer ao lado de uma bela dama)</span><br><br>
+                    <span style="color: #d10034;">Obrigado por tudo meu amor.</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // Função dos corações caindo adaptada
+        function criarCoracao() {
+            const container = document.getElementById('conteudo-surpresa');
+            const coracao = document.createElement('div');
+            coracao.classList.add('coracao-caindo');
+            
+            const tipos = ['❤️', '💖', '💘', '💕', '♥'];
+            coracao.innerText = tipos[Math.floor(Math.random() * tipos.length)];
+            
+            coracao.style.left = Math.random() * 100 + 'vw';
+            // Corações um pouco menores no celular
+            coracao.style.fontSize = Math.random() * 10 + 15 + 'px'; 
+            
+            const duracao = Math.random() * 3 + 4; 
+            coracao.style.animationDuration = duracao + 's';
+            coracao.style.opacity = Math.random() * 0.4 + 0.3; 
+
+            container.appendChild(coracao);
+
+            setTimeout(() => { coracao.remove(); }, duracao * 1000);
+        }
+
+        // Eventos do botão (click e touchstart garantem funcionamento rápido no celular)
+        const btnIniciar = document.getElementById('btn-iniciar');
+        
+        function iniciarSurpresa(e) {
+            e.preventDefault(); // Evita duplo clique no touch
+            
+            const telaInicial = document.getElementById('tela-inicial');
+            const conteudo = document.getElementById('conteudo-surpresa');
+            
+            const audio = document.getElementById('meuAudio');
+            // Play forçado aqui é a única forma de rodar música no celular
+            audio.play().catch(e => console.log("Áudio não encontrado."));
+
+            telaInicial.style.opacity = '0';
+            
+            // Remove evento para não disparar de novo
+            btnIniciar.removeEventListener('click', iniciarSurpresa);
+            btnIniciar.removeEventListener('touchstart', iniciarSurpresa);
+            
+            setTimeout(() => {
+                telaInicial.style.display = 'none';
+                conteudo.style.opacity = '1';
+                conteudo.classList.add('rodando');
+                
+                // Chuva de corações
+                setTimeout(() => { setInterval(criarCoracao, 400); }, 11000);
+            }, 1000); 
+        }
+
+        btnIniciar.addEventListener('click', iniciarSurpresa);
+        btnIniciar.addEventListener('touchstart', iniciarSurpresa, {passive: false});
+
+        // Lógica do botão "Ler Carta"
+        document.getElementById('btn-abrir-carta').addEventListener('click', function(e) {
+            e.preventDefault();
+            const cenaFoto = document.getElementById('cena-foto');
+            const cenaCarta = document.getElementById('cena-carta');
+
+            cenaFoto.classList.add('esconder-suave');
+            cenaCarta.classList.add('mostrar-suave');
+        });
+        
+        document.getElementById('btn-abrir-carta').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const cenaFoto = document.getElementById('cena-foto');
+            const cenaCarta = document.getElementById('cena-carta');
+
+            cenaFoto.classList.add('esconder-suave');
+            cenaCarta.classList.add('mostrar-suave');
+        }, {passive: false});
+    </script>
+
+</body>
+</html>
