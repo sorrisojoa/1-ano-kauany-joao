@@ -117,7 +117,7 @@
         box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
         z-index: 50;
         overflow-y: auto; 
-        -webkit-overflow-scrolling: touch; /* Deixa a rolagem suave em iPhones */
+        -webkit-overflow-scrolling: touch; /* Deixa a rolagem suave em celulares */
         text-align: left;
         color: #333;
         line-height: 1.6;
@@ -177,7 +177,6 @@
     .rodando .cena1 { animation: animacaoCena1 5s forwards; z-index: 10; }
     .rodando .cena2 { animation: animacaoCena2 6s ease-in-out 5s forwards; z-index: 10; }
     
-    /* Adaptando o movimento dos ursos para celular */
     @media (min-width: 601px) {
         .rodando .urso { animation: moverDireitaDesk 2s ease-in-out 6s forwards; }
         .rodando .coelho { animation: moverEsquerdaDesk 2s ease-in-out 6s forwards; }
@@ -272,7 +271,6 @@
     </div>
 
     <script>
-        // Função dos corações caindo adaptada
         function criarCoracao() {
             const container = document.getElementById('conteudo-surpresa');
             const coracao = document.createElement('div');
@@ -282,7 +280,6 @@
             coracao.innerText = tipos[Math.floor(Math.random() * tipos.length)];
             
             coracao.style.left = Math.random() * 100 + 'vw';
-            // Corações um pouco menores no celular
             coracao.style.fontSize = Math.random() * 10 + 15 + 'px'; 
             
             const duracao = Math.random() * 3 + 4; 
@@ -294,18 +291,24 @@
             setTimeout(() => { coracao.remove(); }, duracao * 1000);
         }
 
-        // Eventos do botão (click e touchstart garantem funcionamento rápido no celular)
         const btnIniciar = document.getElementById('btn-iniciar');
         
         function iniciarSurpresa(e) {
-            e.preventDefault(); // Evita duplo clique no touch
+            e.preventDefault(); 
             
             const telaInicial = document.getElementById('tela-inicial');
             const conteudo = document.getElementById('conteudo-surpresa');
-            
             const audio = document.getElementById('meuAudio');
-            // Play forçado aqui é a única forma de rodar música no celular
-            audio.play().catch(e => console.log("Áudio não encontrado."));
+            
+            // O segredo para o mobile: forçar o carregamento antes do play
+            audio.load();
+            
+            // Tenta tocar a música e mostra no console caso haja erro
+            audio.play().then(() => {
+                console.log("Música tocando!");
+            }).catch(erro => {
+                console.log("Áudio bloqueado pelo navegador:", erro);
+            });
 
             telaInicial.style.opacity = '0';
             
@@ -318,7 +321,7 @@
                 conteudo.style.opacity = '1';
                 conteudo.classList.add('rodando');
                 
-                // Chuva de corações
+                // Chuva de corações inicia aos 11s
                 setTimeout(() => { setInterval(criarCoracao, 400); }, 11000);
             }, 1000); 
         }
